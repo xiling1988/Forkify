@@ -56,5 +56,5 @@ export const loadSearchResults = async function (query) {
 // loadSearchResults('pizza');
 
 export const getSearchResultsPage = function (page) {
-  return state.search.results;
+  return state.search.results.slice();
 };
