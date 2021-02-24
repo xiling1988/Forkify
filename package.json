@@ -1,0 +1,24 @@
+{
+  "name": "forkify",
+  "version": "1.0.0",
+  "description": "Recipe Application",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "author": "Hans Schilling",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.12.13",
+    "@babel/plugin-proposal-private-methods": "^7.12.13",
+    "babel-eslint": "^10.1.0",
+    "parcel": "^2.0.0-nightly.570",
+    "sass": "^1.32.5"
+  },
+  "dependencies": {
+    "core-js": "^3.8.3",
+    "fractional": "^1.0.0",
+    "regenerator-runtime": "^0.13.7"
+  }
+}
