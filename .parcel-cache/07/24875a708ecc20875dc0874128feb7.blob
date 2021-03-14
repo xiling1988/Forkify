@@ -453,7 +453,7 @@ function hmrAcceptRun(bundle, id) {
 }
 
 },{}],"45IGY":[function(require,module,exports) {
-require('./bundle-manifest').register(JSON.parse("{\"30Yg2\":\"index.250b04c7.js\",\"7v2qO\":\"icons.d4a14980.svg\"}"));
+require('./bundle-manifest').register(JSON.parse("{\"30Yg2\":\"index.HASH_REF_6315ebf922a29661e8263da0250b04c7.js\",\"7v2qO\":\"icons.HASH_REF_f6727c52d326b6f99dffa0b9d4a14980.svg\"}"));
 },{"./bundle-manifest":"3CXJ5"}],"3CXJ5":[function(require,module,exports) {
 "use strict";
 
@@ -520,7 +520,7 @@ const controlSearchResults = async function () {
     await _modelJs.loadSearchResults(query);
     console.log(_modelJs.state.search.results);
     // 3 Render Search Results
-    _viewsResultsViewJsDefault.default.render(_modelJs.getSearchResultsPage());
+    _viewsResultsViewJsDefault.default.render(_modelJs.getSearchResultsPage(3));
     _viewsPaginationViewJsDefault.default.render(_modelJs.state.search);
   } catch (err) {
     _viewsResultsViewJsDefault.default.renderError();
@@ -529,7 +529,6 @@ const controlSearchResults = async function () {
 const controlPagination = function (goToPage) {
   console.log('Pag Controller');
   _viewsResultsViewJsDefault.default.render(_modelJs.getSearchResultsPage(goToPage));
-  _viewsPaginationViewJsDefault.default.render(_modelJs.state.search);
 };
 const init = function () {
   _viewsRecipeViewJsDefault.default.addHandlerRender(controlRecipes);
@@ -13363,4 +13362,4 @@ exports.default = new PaginationView();
 
 },{"url:../../img/icons.svg":"5usAu","./view.js":"2fT4v","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}]},["5KYk0","45IGY","3miIZ"], "3miIZ", "parcelRequirefade")
 
-//# sourceMappingURL=index.250b04c7.js.map
+//# sourceMappingURL=index.HASH_REF_6315ebf922a29661e8263da0250b04c7.js.map
