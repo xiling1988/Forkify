@@ -506,6 +506,7 @@ const controlRecipes = async function () {
     await _modelJs.loadRecipe(id);
     // 2. Rendering recipe
     _viewsRecipeViewJsDefault.default.render(_modelJs.state.recipe);
+    _viewsRecipeViewJsDefault.default.addHandlerServing(controlServings);
   } catch (err) {
     _viewsRecipeViewJsDefault.default.renderError(err);
   }
@@ -525,6 +526,10 @@ const controlSearchResults = async function () {
   } catch (err) {
     _viewsResultsViewJsDefault.default.renderError();
   }
+};
+const controlServings = function (newServings) {
+  _modelJs.updateServings(newServings);
+  _viewsRecipeViewJsDefault.default.update(_modelJs.state.recipe);
 };
 const controlPagination = function (goToPage) {
   console.log('Pag Controller');
@@ -552,6 +557,9 @@ _parcelHelpers.export(exports, "loadSearchResults", function () {
 });
 _parcelHelpers.export(exports, "getSearchResultsPage", function () {
   return getSearchResultsPage;
+});
+_parcelHelpers.export(exports, "updateServings", function () {
+  return updateServings;
 });
 require('regenerator-runtime');
 var _configJs = require('./config.js');
@@ -606,6 +614,13 @@ const getSearchResultsPage = function (page = state.search.page) {
   const start = (page - 1) * state.search.resultsPerPage;
   const end = page * state.search.resultsPerPage;
   return state.search.results.slice(start, end);
+};
+const updateServings = function (newServings) {
+  console.log(newServings);
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = ing.quantity * newServings / state.recipe.servings;
+  });
+  state.recipe.servings = newServings;
 };
 
 },{"regenerator-runtime":"62Qib","./config.js":"6pr2F","../js/helpers.js":"581KF","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"62Qib":[function(require,module,exports) {
@@ -1484,12 +1499,12 @@ class RecipeView extends _viewJsDefault.default {
                     <span class="recipe__info-text">servings</span> 
   
                     <div class="recipe__info-buttons">
-                    <button class="btn--tiny btn--increase-servings">
+                    <button class="btn--tiny btn--increase-servings" data-go-to="${this._data.servings - 1}">
                         <svg>
                         <use href="${_urlImgIconsSvgDefault.default}#icon-minus-circle"></use>
                         </svg>
                     </button>
-                    <button class="btn--tiny btn--increase-servings">
+                    <button class="btn--tiny btn--increase-servings" data-go-to="${this._data.servings + 1}">
                         <svg>
                         <use href="${_urlImgIconsSvgDefault.default}#icon-plus-circle"></use>
                         </svg>
@@ -1544,6 +1559,15 @@ class RecipeView extends _viewJsDefault.default {
             ${ing.description}
         </div>
         </li>`;
+  }
+  addHandlerServing(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--tiny');
+      if (!btn) return;
+      const newServing = +btn.dataset.goTo;
+      if (newServing === 0) return;
+      handler(newServing);
+    });
   }
 }
 exports.default = new RecipeView();
@@ -1674,6 +1698,22 @@ class View {
     const markup = this._generateMarkup();
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+  update(data) {
+    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    const newElements = Array.from(newDOM.querySelectorAll('*'));
+    const curElements = Array.from(this._parentElement.querySelectorAll('*'));
+    newElements.forEach((newEl, i) => {
+      const curEl = curElements[i];
+      console.log(curEl, newEl.isEqualNode(curEl));
+      if (!newEl.isEqualNode(curEl) && newEl.firstChild?.nodeValue?.trim?.() !== '') {
+        console.log(newEl, '💥', newEl.firstChild.nodeValue.trim());
+        curEl.textContent = newEl.textContent;
+      }
+    });
   }
   _clear() {
     this._parentElement.innerHTML = '';
