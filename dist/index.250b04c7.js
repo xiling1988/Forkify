@@ -502,11 +502,12 @@ const controlRecipes = async function () {
     if (!id) return;
     // guard clause
     _viewsRecipeViewJsDefault.default.renderSpinner();
+    // Update selected recipe class
+    _viewsResultsViewJsDefault.default.update(_modelJs.getSearchResultsPage());
     // loading recipe
     await _modelJs.loadRecipe(id);
     // 2. Rendering recipe
     _viewsRecipeViewJsDefault.default.render(_modelJs.state.recipe);
-    _viewsRecipeViewJsDefault.default.addHandlerServing(controlServings);
   } catch (err) {
     _viewsRecipeViewJsDefault.default.renderError(err);
   }
@@ -536,10 +537,21 @@ const controlPagination = function (goToPage) {
   _viewsResultsViewJsDefault.default.render(_modelJs.getSearchResultsPage(goToPage));
   _viewsPaginationViewJsDefault.default.render(_modelJs.state.search);
 };
+const controlAddBookmark = function () {
+  if (!_modelJs.state.recipe.bookmarked) {
+    _modelJs.addBookmark(_modelJs.state.recipe);
+  } else {
+    _modelJs.deleteBookmark(_modelJs.state.recipe.id);
+  }
+  // console.log(model.state.recipe);
+  _viewsRecipeViewJsDefault.default.update(_modelJs.state.recipe);
+};
 const init = function () {
   _viewsRecipeViewJsDefault.default.addHandlerRender(controlRecipes);
   _viewsSearchViewJsDefault.default.addHandlerSearch(controlSearchResults);
   _viewsPaginationViewJsDefault.default.addHandlerClick(controlPagination);
+  _viewsRecipeViewJsDefault.default.addHandlerServing(controlServings);
+  _viewsRecipeViewJsDefault.default.addHandlerAddBookmark(controlAddBookmark);
 };
 init();
 
@@ -561,6 +573,12 @@ _parcelHelpers.export(exports, "getSearchResultsPage", function () {
 _parcelHelpers.export(exports, "updateServings", function () {
   return updateServings;
 });
+_parcelHelpers.export(exports, "addBookmark", function () {
+  return addBookmark;
+});
+_parcelHelpers.export(exports, "deleteBookmark", function () {
+  return deleteBookmark;
+});
 require('regenerator-runtime');
 var _configJs = require('./config.js');
 var _jsHelpersJs = require('../js/helpers.js');
@@ -571,7 +589,8 @@ const state = {
     results: [],
     page: 1,
     resultsPerPage: _configJs.RES_PER_PAGE
-  }
+  },
+  bookmarks: []
 };
 const loadRecipe = async function (id) {
   try {
@@ -587,6 +606,9 @@ const loadRecipe = async function (id) {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients
     };
+    if (state.bookmarks.some(rec => rec.id === id)) {
+      state.recipe.bookmarked = true;
+    } else state.recipe.bookmarked = false;
     console.log(state.recipe);
   } catch (err) {
     // alert(err);
@@ -607,6 +629,7 @@ const loadSearchResults = async function (query) {
         image: rec.image_url
       };
     });
+    state.search.page = 1;
   } catch (err) {}
 };
 const getSearchResultsPage = function (page = state.search.page) {
@@ -621,6 +644,15 @@ const updateServings = function (newServings) {
     ing.quantity = ing.quantity * newServings / state.recipe.servings;
   });
   state.recipe.servings = newServings;
+};
+const addBookmark = function (recipe) {
+  state.bookmarks.push(recipe);
+  if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+};
+const deleteBookmark = function (id) {
+  const index = state.bookmarks.findIndex(bm => bm.id === id);
+  state.bookmarks.splice(index, 1);
+  if (id === state.recipe.id) state.recipe.bookmarked = false;
 };
 
 },{"regenerator-runtime":"62Qib","./config.js":"6pr2F","../js/helpers.js":"581KF","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"62Qib":[function(require,module,exports) {
@@ -1573,6 +1605,13 @@ class RecipeView extends _viewJsDefault.default {
       handler(newServing);
     });
   }
+  addHandlerAddBookmark(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--bookmark');
+      if (!btn) return;
+      handler();
+    });
+  }
 }
 exports.default = new RecipeView();
 
@@ -1704,7 +1743,6 @@ class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
   update(data) {
-    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
     this._data = data;
     const newMarkup = this._generateMarkup();
     const newDOM = document.createRange().createContextualFragment(newMarkup);
@@ -2174,9 +2212,10 @@ class ResultsView extends _viewJsDefault.default {
     return this._data.map(result => this._generateMarkupPreview(result)).join('');
   }
   _generateMarkupPreview(result) {
+    const id = window.location.hash.slice(1);
     // console.log(result);
     return `<li class="preview">
-              <a class="preview__link" href="#${result.id}">
+              <a class="preview__link ${result.id === id ? 'preview__link--active' : ''}" href="#${result.id}">
                 <figure class="preview__fig">
                   <img src="${result.image}" alt="${result.title}" />
                 </figure>

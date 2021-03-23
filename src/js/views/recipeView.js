@@ -130,6 +130,14 @@ class RecipeView extends View {
       handler(newServing);
     });
   }
+
+  addHandlerAddBookmark(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--bookmark');
+      if (!btn) return;
+      handler();
+    });
+  }
 }
 
 export default new RecipeView();
