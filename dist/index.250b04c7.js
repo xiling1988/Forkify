@@ -1738,10 +1738,11 @@ var _urlImgIconsSvg = require('url:../../img/icons.svg');
 var _urlImgIconsSvgDefault = _parcelHelpers.interopDefault(_urlImgIconsSvg);
 class View {
   _data;
-  render(data) {
+  render(data, render = true) {
     if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
     this._data = data;
     const markup = this._generateMarkup();
+    if (!render) return markup;
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
@@ -2201,15 +2202,13 @@ exports.default = new SearchView();
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
 _parcelHelpers.defineInteropFlag(exports);
 require('url:../../img/icons.svg');
+require('./previewView.js');
 var _viewJs = require('./view.js');
 var _viewJsDefault = _parcelHelpers.interopDefault(_viewJs);
 class ResultsView extends _viewJsDefault.default {
   _parentElement = document.querySelector('.results');
   _errorMessage = 'Could not find results for query. Try again!';
   _message = '';
-  addHandlerRender(handler) {
-    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
-  }
   _generateMarkup() {
     console.log(this._data);
     return this._data.map(result => this._generateMarkupPreview(result)).join('');
@@ -2232,7 +2231,33 @@ class ResultsView extends _viewJsDefault.default {
 }
 exports.default = new ResultsView();
 
-},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","url:../../img/icons.svg":"5usAu","./view.js":"2fT4v"}],"1PFvP":[function(require,module,exports) {
+},{"url:../../img/icons.svg":"5usAu","./view.js":"2fT4v","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./previewView.js":"3QsRt"}],"3QsRt":[function(require,module,exports) {
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+require('url:../../img/icons.svg');
+var _viewJs = require('./view.js');
+var _viewJsDefault = _parcelHelpers.interopDefault(_viewJs);
+class PreviewView extends _viewJsDefault.default {
+  _parentElement = '';
+  _generateMarkup() {
+    const id = window.location.hash.slice(1);
+    // console.log(result);
+    return `<li class="preview">
+              <a class="preview__link ${this._data.id === id ? 'preview__link--active' : ''}" href="#${this._data.id}">
+                <figure class="preview__fig">
+                  <img src="${this._data.image}" alt="${this._data.title}" />
+                </figure>
+                <div class="preview__data"> 
+                  <h4 class="preview__title">${this._data.title}</h4>
+                  <p class="preview__publisher">${this._data.publisher}</p>
+                </div>
+              </a>
+            </li>`;
+  }
+}
+exports.default = new PreviewView();
+
+},{"url:../../img/icons.svg":"5usAu","./view.js":"2fT4v","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"1PFvP":[function(require,module,exports) {
 require('../es');
 require('../web');
 var path = require('../internals/path');
@@ -13456,35 +13481,19 @@ _parcelHelpers.defineInteropFlag(exports);
 require('url:../../img/icons.svg');
 var _viewJs = require('./view.js');
 var _viewJsDefault = _parcelHelpers.interopDefault(_viewJs);
+var _previewViewJs = require('./previewView.js');
+var _previewViewJsDefault = _parcelHelpers.interopDefault(_previewViewJs);
 class BookmarksView extends _viewJsDefault.default {
   _parentElement = document.querySelector('.bookmarks__list');
   _errorMessage = 'No bookmarks yet, fin a nice recipe and bookmark it ;)';
   _message = '';
-  addHandlerRender(handler) {
-    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
-  }
   _generateMarkup() {
-    console.log(this._data);
-    return this._data.map(result => this._generateMarkupPreview(result)).join('');
-  }
-  _generateMarkupPreview(result) {
-    const id = window.location.hash.slice(1);
-    // console.log(result);
-    return `<li class="preview">
-              <a class="preview__link ${result.id === id ? 'preview__link--active' : ''}" href="#${result.id}">
-                <figure class="preview__fig">
-                  <img src="${result.image}" alt="${result.title}" />
-                </figure>
-                <div class="preview__data"> 
-                  <h4 class="preview__title">${result.title}</h4>
-                  <p class="preview__publisher">${result.publisher}</p>
-                </div>
-              </a>
-            </li>`;
+    console.log('💥', this._data);
+    return this._data.map(bookmark => _previewViewJsDefault.default.render(bookmark, false)).join('');
   }
 }
 exports.default = new BookmarksView();
 
-},{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","url:../../img/icons.svg":"5usAu","./view.js":"2fT4v"}]},["5KYk0","45IGY","3miIZ"], "3miIZ", "parcelRequirefade")
+},{"url:../../img/icons.svg":"5usAu","./view.js":"2fT4v","@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y","./previewView.js":"3QsRt"}]},["5KYk0","45IGY","3miIZ"], "3miIZ", "parcelRequirefade")
 
 //# sourceMappingURL=index.250b04c7.js.map

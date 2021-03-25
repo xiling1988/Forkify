@@ -1,14 +1,11 @@
 import icons from 'url:../../img/icons.svg';
+import previewView from './previewView.js';
 import View from './view.js';
 
 class ResultsView extends View {
   _parentElement = document.querySelector('.results');
   _errorMessage = 'Could not find results for query. Try again!';
   _message = '';
-
-  addHandlerRender(handler) {
-    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
-  }
 
   _generateMarkup() {
     console.log(this._data);

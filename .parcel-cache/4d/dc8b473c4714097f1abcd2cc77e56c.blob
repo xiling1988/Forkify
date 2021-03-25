@@ -1,0 +1,32 @@
+var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
+_parcelHelpers.defineInteropFlag(exports);
+require('url:../../img/icons.svg');
+var _viewJs = require('./view.js');
+var _viewJsDefault = _parcelHelpers.interopDefault(_viewJs);
+var _previewViewJs = require('./previewView.js');
+var _previewViewJsDefault = _parcelHelpers.interopDefault(_previewViewJs);
+class BookmarksView extends _viewJsDefault.default {
+  _parentElement = document.querySelector('.bookmarks__list');
+  _errorMessage = 'No bookmarks yet, fin a nice recipe and bookmark it ;)';
+  _message = '';
+  _generateMarkup() {
+    console.log('💥', this._data);
+    return this._data.map(result => _previewViewJsDefault.default.render(result, false)).join('');
+  }
+  _generateMarkupPreview(result) {
+    const id = window.location.hash.slice(1);
+    // console.log(result);
+    return `<li class="preview">
+              <a class="preview__link ${result.id === id ? 'preview__link--active' : ''}" href="#${result.id}">
+                <figure class="preview__fig">
+                  <img src="${result.image}" alt="${result.title}" />
+                </figure>
+                <div class="preview__data"> 
+                  <h4 class="preview__title">${result.title}</h4>
+                  <p class="preview__publisher">${result.publisher}</p>
+                </div>
+              </a>
+            </li>`;
+  }
+}
+exports.default = new BookmarksView();
